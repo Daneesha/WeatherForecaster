@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -20,7 +21,7 @@ namespace ForecasterWebApplication.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
-            string[] Summaries = new string[10];
+            ArrayList Summaries = new ArrayList();
 
             string query = @"Select Summary from dbo.Summary";
             DataTable table = new DataTable();
@@ -34,11 +35,9 @@ namespace ForecasterWebApplication.Controllers
                     myReader = myCommand.ExecuteReader();
                     table.Load(myReader);
 
-                    int i = 0;
                     foreach (DataRow dr in table.Rows)
                     {
-                        Summaries[i] = Convert.ToString(dr["Summary"]);
-                        i++;
+                        Summaries.Add(Convert.ToString(dr["Summary"]));
                     }
 
                     myReader.Close();
@@ -50,7 +49,7 @@ namespace ForecasterWebApplication.Controllers
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                Summary = Summaries[Random.Shared.Next(Summaries.Count)].ToString()
             })
             .ToArray();
         }
